@@ -11,7 +11,7 @@ var github = new Github({
   auth: "oauth"
 })
 
-var repo = github.getRepo('Instamojo', 'waggle');
+var repo = github.getRepo(Config.originalRepo.username, Config.originalRepo.repoName);
 
 repo.contents('master', "bin", function(err, contents) {
   contents.map((data, i) => {
@@ -23,6 +23,44 @@ repo.contents('master', "bin", function(err, contents) {
     })
   })
 });
+
+export function addFilesToNewRepo (files) {
+  files.map((filePath, i) => {
+    let path = `${Config.newRepo.pathToCopyTo}/${filePath}`;
+    repo.read(Config.originalRepo.branchToCopyFrom, filePath, (err, fileData) => {
+      mkdirp(getDirName(path), (err) => {
+        if(err) console.log(err);
+        fs.createWriteStream(path).write(fileData);
+      })
+    })
+  })
+}
+
+export function removeFilesFromNewRepo (files) {
+  files.map((filePath, i) => {
+    let path = `${Config.newRepo.pathToCopyTo}/${filePath}`;
+    fs.exists(path, function(exists) {
+    if(exists) {
+        console.log('File exists. Deleting now ...');
+        fs.unlink(path);
+      } else {
+        console.log('File not found, so not deleting.');
+      }
+    });
+  })
+}
+
+export function modifyFilesFromNewRepo (files) {
+  files.map((filePath, i) => {
+    let path = `${Config.newRepo.pathToCopyTo}/${filePath}`;
+    repo.read(Config.originalRepo.branchToCopyFrom, filePath, (err, fileData) => {
+      mkdirp(getDirName(path), (err) => {
+        if(err) console.log(err);
+        fs.createWriteStream(path).write(fileData);
+      })
+    })
+  })
+}
 
 //
 // var errorAndAttemptOpen = function(err) {

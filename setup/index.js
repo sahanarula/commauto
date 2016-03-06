@@ -15,7 +15,7 @@ var github = new Github({
   auth: "oauth"
 })
 
-var repo = github.getRepo('Instamojo', 'imojo');
+var repo = github.getRepo(`${Config.originalRepo.username}`, `${Config.originalRepo.repoName}`);
 
 var errorAndAttemptOpen = function(err) {
   return NodeGit.Repository.open(`${Config.localPath}`);
@@ -32,7 +32,7 @@ cloneOptions.fetchOpts = {
   }
 };
 
-let cloneRepository = NodeGit.Clone(Config.newRepo.url, Config.localPath, cloneOptions);
+let cloneRepository = NodeGit.Clone(Config.newRepo.repoName, Config.localPath, cloneOptions);
 
 cloneRepository
 .catch(errorAndAttemptOpen)
